@@ -56,5 +56,4 @@
 
 The platform is available as a standalone inbuilt application:
 
-* **Mobile**: `app-release.apk` for Android devices.
 * **Desktop**: `CAT_Platform_Setup.exe` for Windows PC/Laptops.
