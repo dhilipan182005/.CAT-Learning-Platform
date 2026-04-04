@@ -1,0 +1,1 @@
+print("Circuit detection placeholder")

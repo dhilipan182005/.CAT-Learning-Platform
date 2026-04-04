@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta charset="UTF-8">
+<title>.CAT Learning Platform</title>
+
+<link rel="icon" href="./assets/logo.png">
+
+<script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<!-- SPLASH SCREEN -->
+
+<div id="splashScreen">
+
+<img src="assets/logo.png" class="splashLogo">
+
+<h1>.CAT Learning Platform</h1>
+
+<div class="loader"></div>
+
+</div>
+<!-- HEADER -->
+
+<div class="topHeader">
+
+<div class="logoArea">
+<img src="./assets/logo.png" class="appLogo">
+<span class="appName">.CAT</span>
+</div>
+
+<div class="notif">🔔</div>
+
+</div>
+
+<!-- HOME -->
+
+<div id="home" class="page">
+
+<h2>Electronics Component Guide</h2>
+
+<div class="componentSlider">
+
+<div class="slide active">
+
+<h3>Resistor</h3>
+
+<p>Definition:</p>
+<p>A resistor limits current in a circuit.</p>
+
+<p><b>Formula</b></p>
+<p>V = I × R</p>
+
+</div>
+
+<div class="slide">
+
+<h3>Capacitor</h3>
+
+<p>Definition:</p>
+<p>Stores energy in electric field.</p>
+
+<p><b>Formula</b></p>
+<p>XC = 1 / (2πfC)</p>
+
+</div>
+
+<div class="slide">
+
+<h3>Inductor</h3>
+
+<p>Definition:</p>
+<p>Stores energy in magnetic field.</p>
+
+<p><b>Formula</b></p>
+<p>XL = 2πfL</p>
+
+</div>
+
+<div class="slide">
+
+<h3>Diode</h3>
+
+<p>Definition:</p>
+<p>Allows current in one direction.</p>
+
+<p><b>Formula</b></p>
+<p>Vf ≈ 0.7V</p>
+
+</div>
+
+</div>
+
+<button onclick="prevSlide()">Previous</button>
+<button onclick="nextSlide()">Next</button>
+
+</div>
+<!-- DASHBOARD -->
+
+<div id="dashboard" class="page">
+
+<h2>Dashboard</h2>
+
+<p>Welcome to .CAT Electrical Engineering Toolkit.</p>
+
+<ul>
+<li>✔ Circuit Builder</li>
+<li>✔ Electrical Calculators</li>
+<li>✔ Component Library</li>
+<li>✔ IoT Simulation</li>
+</ul>
+
+<div class="dashboardStats">
+
+<div class="statBox">
+<h3>Components</h3>
+<p id="componentCount">0</p>
+</div>
+
+<div class="statBox">
+<h3>Simulations</h3>
+<p id="simulationCount">0</p>
+</div>
+
+<div class="statBox">
+<h3>Users</h3>
+<p id="userCount">0</p>
+</div>
+
+</div>
+</div>
+
+
+<!-- HOME -->
+
+<!-- NEW HOME DASHBOARD -->
+
+<div id="home" class="page active">
+
+<div class="menuGrid">
+
+<div class="menuItem" onclick="showPage('library')">
+<img src="https://cdn-icons-png.flaticon.com/512/3145/3145765.png">
+<p>Component Library</p>
+</div>
+
+<div class="menuItem" onclick="showPage('analysis')">
+<img src="https://cdn-icons-png.flaticon.com/512/2103/2103633.png">
+<p>Electrical Calculators</p>
+</div>
+
+<div class="menuItem" onclick="showPage('simulation')">
+<img src="https://cdn-icons-png.flaticon.com/512/1581/1581866.png">
+<p>Circuit Builder</p>
+</div>
+
+<div class="menuItem" onclick="showPage('iot')">
+<img src="https://cdn-icons-png.flaticon.com/512/1041/1041916.png">
+<p>IoT Lab</p>
+</div>
+
+<div class="menuItem" onclick="showPage('analysis')">
+<img src="https://cdn-icons-png.flaticon.com/512/2933/2933792.png">
+<p>Signal Analyzer</p>
+</div>
+
+<div class="menuItem" onclick="showPage('analysis')">
+<img src="https://cdn-icons-png.flaticon.com/512/2721/2721295.png">
+<p>Oscilloscope</p>
+</div>
+
+<div class="menuItem" onclick="showPage('history')">
+<img src="https://cdn-icons-png.flaticon.com/512/1828/1828919.png">
+<p>History</p>
+</div>
+
+<div class="menuItem" onclick="showPage('settings')">
+<img src="https://cdn-icons-png.flaticon.com/512/2099/2099058.png">
+<p>Settings</p>
+</div>
+
+</div>
+
+</div>
+
+<!-- COMPONENT LIBRARY -->
+
+<div id="library" class="page">
+
+
+
+<h2>Component Library</h2>
+
+<input class="form-control mb-3"
+placeholder="Search component"
+onkeyup="searchComponent(this.value)">
+
+<div id="componentList"></div>
+
+</div>
+
+
+
+<!-- ANALYSIS -->
+
+<div id="analysis" class="page">
+
+<h2>Electrical Analysis Lab</h2>
+
+<div class="glass">
+
+<button class="glassBtn" onclick="openAnalysis('basic')">Basic</button>
+<button class="glassBtn" onclick="openAnalysis('circuit')">Circuit</button>
+<button class="glassBtn" onclick="openAnalysis('signal')">Signal</button>
+<button class="glassBtn" onclick="openAnalysis('digital')">Digital</button>
+
+</div>
+
+<h2>⚡ Electrical Analysis Lab</h2>
+
+<!-- RESISTANCE NETWORKS -->
+
+<div class="analysisCategory">
+
+<h3>Resistance Networks</h3>
+
+<div class="analysisGrid">
+
+<div class="card p-3">
+<h5>Series Resistance</h5>
+<input id="seriesR" class="form-control mb-2" placeholder="10,20,30">
+<button class="btn btn-success" onclick="seriesRes()">Calculate</button>
+<p id="seriesResult"></p>
+</div>
+
+<div class="card p-3">
+<h5>Parallel Resistance</h5>
+<input id="parallelR" class="form-control mb-2" placeholder="10,20">
+<button class="btn btn-warning" onclick="parallelRes()">Calculate</button>
+<p id="parallelResult"></p>
+</div>
+
+</div>
+
+</div>
+
+<!-- RLC / REACTANCE -->
+
+<div class="analysisCategory">
+
+<h3>RLC & Reactance</h3>
+
+<div class="analysisGrid">
+
+<div class="card p-3">
+<h5>RLC Impedance</h5>
+<input id="rlcR" class="form-control mb-2" placeholder="R">
+<input id="rlcL" class="form-control mb-2" placeholder="L">
+<input id="rlcC" class="form-control mb-2" placeholder="C">
+<input id="rlcF" class="form-control mb-2" placeholder="Frequency">
+<button class="btn btn-dark" onclick="rlcCalc()">Calculate</button>
+<p id="rlcResult"></p>
+</div>
+
+<div class="card p-3">
+<h5>Frequency Response</h5>
+<input id="freqStart" class="form-control mb-2" placeholder="Start Hz">
+<input id="freqEnd" class="form-control mb-2" placeholder="End Hz">
+<button class="btn btn-info" onclick="plotFrequency()">Plot</button>
+<canvas id="freqChart"></canvas>
+</div>
+
+</div>
+
+</div>
+
+<!-- SIGNAL LAB -->
+
+<div class="analysisCategory">
+
+<h3>Signal Laboratory</h3>
+
+<div class="analysisGrid">
+
+<div class="card p-3">
+<h5>Oscilloscope Viewer</h5>
+<input id="oscFreq" class="form-control mb-2" placeholder="Frequency">
+<input id="oscAmp" class="form-control mb-2" placeholder="Amplitude">
+<button class="btn btn-primary" onclick="drawWave()">Generate</button>
+<canvas id="scope" width="500" height="200"></canvas>
+</div>
+
+<div class="card p-3">
+<h5>Signal Generator</h5>
+
+<select id="signalType" class="form-control mb-2">
+<option>Sine</option>
+<option>Square</option>
+<option>Triangle</option>
+</select>
+
+<input id="signalFreq" class="form-control mb-2" placeholder="Frequency">
+<input id="signalAmp" class="form-control mb-2" placeholder="Amplitude">
+
+<button class="btn btn-success" onclick="generateSignal()">Generate</button>
+
+<canvas id="signalCanvas" width="500" height="200"></canvas>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- CIRCUIT LAWS -->
+
+<div class="analysisCategory">
+
+<h3>Circuit Laws</h3>
+
+<div class="analysisGrid">
+
+<div class="card p-3">
+<h5>KVL Solver</h5>
+<input id="kvlInput" class="form-control mb-2" placeholder="10,-5,-5">
+<button class="btn btn-info" onclick="solveKVL()">Solve</button>
+<p id="kvlResult"></p>
+</div>
+
+<div class="card p-3">
+<h5>KCL Solver</h5>
+<input id="kclInput" class="form-control mb-2" placeholder="2,3,-5">
+<button class="btn btn-warning" onclick="solveKCL()">Solve</button>
+<p id="kclResult"></p>
+</div>
+
+</div>
+
+</div>
+
+<!-- DIGITAL LOGIC -->
+
+<div class="analysisCategory">
+
+<h3>Digital Logic</h3>
+
+<div class="analysisGrid">
+
+<div class="card p-3">
+
+<h5>Logic Gate Simulator</h5>
+
+<select id="logicGate" class="form-control mb-2">
+<option>AND</option>
+<option>OR</option>
+<option>NOT</option>
+<option>NAND</option>
+<option>NOR</option>
+<option>XOR</option>
+</select>
+
+<input id="logicA" class="form-control mb-2" placeholder="Input A">
+<input id="logicB" class="form-control mb-2" placeholder="Input B">
+
+<button class="btn btn-dark" onclick="logicSim()">Simulate</button>
+
+<p id="logicResult"></p>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- BASIC ELECTRICAL -->
+
+<div class="analysisCategory">
+
+<h3>Basic Electrical</h3>
+
+<div class="analysisGrid">
+
+<div class="card p-3">
+<h5>Ohm Law</h5>
+<input id="voltage" class="form-control mb-2" placeholder="Voltage">
+<input id="resistance" class="form-control mb-2" placeholder="Resistance">
+<button class="btn btn-danger" onclick="ohmCalc()">Calculate</button>
+<p id="ohmResult"></p>
+</div>
+
+<div class="card p-3">
+<h5>Power Calculator</h5>
+<input id="v_p" class="form-control mb-2" placeholder="Voltage">
+<input id="i_p" class="form-control mb-2" placeholder="Current">
+<button class="btn btn-success" onclick="calcPower()">Calculate</button>
+<p id="powerResult"></p>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- OHM LAW -->
+
+<div class="card p-3 mb-3">
+
+<h4>Ohm Law</h4>
+
+<input id="voltage" class="form-control mb-2" placeholder="Voltage (V)">
+<input id="resistance" class="form-control mb-2" placeholder="Resistance (Ω)">
+
+<button class="btn btn-danger" onclick="ohmCalc()">Calculate</button>
+
+<p id="ohmResult"></p>
+
+
+<button class="btn btn-secondary mt-2"
+onclick="downloadOhmReport()">
+Download Report
+</button>
+
+</div>
+
+
+<h3>Electrical A-Z Calculators</h3>
+
+<div class="row">
+
+<div class="col-md-4">
+
+<div class="card p-3 mb-3">
+
+<h5>Current (I)</h5>
+
+<input id="v_i" class="form-control mb-2" placeholder="Voltage">
+
+<input id="r_i" class="form-control mb-2" placeholder="Resistance">
+
+<button class="btn btn-primary" onclick="calcCurrent()">Calculate</button>
+
+<p id="currentResult"></p>
+
+</div>
+
+</div>
+
+
+
+<div class="col-md-4">
+
+<div class="card p-3 mb-3">
+
+<h5>Voltage (V)</h5>
+
+<input id="i_v" class="form-control mb-2" placeholder="Current">
+
+<input id="r_v" class="form-control mb-2" placeholder="Resistance">
+
+<button class="btn btn-primary" onclick="calcVoltage()">Calculate</button>
+
+<p id="voltageResult"></p>
+
+</div>
+
+</div>
+
+
+
+<div class="col-md-4">
+
+<div class="card p-3 mb-3">
+
+<h5>Resistance (R)</h5>
+
+<input id="v_r" class="form-control mb-2" placeholder="Voltage">
+
+<input id="i_r" class="form-control mb-2" placeholder="Current">
+
+<button class="btn btn-primary" onclick="calcResistance()">Calculate</button>
+
+<p id="resistanceResult"></p>
+
+</div>
+
+</div>
+
+
+
+<div class="col-md-4">
+
+<div class="card p-3 mb-3">
+
+<h5>Power (P)</h5>
+
+<input id="v_p" class="form-control mb-2" placeholder="Voltage">
+
+<input id="i_p" class="form-control mb-2" placeholder="Current">
+
+<button class="btn btn-success" onclick="calcPower()">Calculate</button>
+
+<p id="powerResult"></p>
+
+</div>
+
+</div>
+
+
+
+<div class="col-md-4">
+
+<div class="card p-3 mb-3">
+
+<h5>Inductive Reactance (XL)</h5>
+
+<input id="freq_l" class="form-control mb-2" placeholder="Frequency (Hz)">
+
+<input id="inductance" class="form-control mb-2" placeholder="Inductance (H)">
+
+<button class="btn btn-info" onclick="calcXL()">Calculate</button>
+
+<p id="xlResult"></p>
+
+</div>
+
+</div>
+
+
+
+<div class="col-md-4">
+
+<div class="card p-3 mb-3">
+
+<h5>Capacitive Reactance (XC)</h5>
+
+<input id="freq_c" class="form-control mb-2" placeholder="Frequency (Hz)">
+
+<input id="capacitance" class="form-control mb-2" placeholder="Capacitance (F)">
+
+<button class="btn btn-warning" onclick="calcXC()">Calculate</button>
+
+<p id="xcResult"></p>
+
+</div>
+
+</div>
+
+
+
+<div class="col-md-4">
+
+<div class="card p-3 mb-3">
+
+<h5>Impedance (Z)</h5>
+
+<input id="res_z" class="form-control mb-2" placeholder="Resistance">
+
+<input id="react_z" class="form-control mb-2" placeholder="Reactance">
+
+<button class="btn btn-dark" onclick="calcZ()">Calculate</button>
+
+<p id="zResult"></p>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- CIRCUIT BUILDER -->
+
+<div id="simulation" class="page">
+
+<h2>Circuit Builder</h2>
+<p>Drag components and connect wires.</p>
+
+<div class="builder">
+
+<div class="palette">
+
+<button onclick="addComponent('resistor')">Resistor</button>
+<button onclick="addComponent('capacitor')">Capacitor</button>
+<button onclick="addComponent('inductor')">Inductor</button>
+<button onclick="addComponent('diode')">Diode</button>
+
+<button onclick="wireMode()">Wire Tool</button>
+<button onclick="openValueEditor()">Set Value</button>
+
+<button onclick="clearBoard()">Clear Board</button>
+<button onclick="undoAction()">Undo</button>
+<button onclick="redoAction()">Redo</button>
+
+<button onclick="runSimulation()">Run Simulation</button>
+<button onclick="suggestCircuit()">Suggestion</button>
+
+<button onclick="exportCircuit()">Export Image</button>
+<button onclick="saveCircuit()">Save Circuit</button>
+<button onclick="loadCircuit()">Load Circuit</button>
+
+</div>
+
+<!-- WORKSPACE -->
+
+<svg id="workspace"></svg>
+
+<!-- COMPONENT MONITOR -->
+
+<div id="componentPanel" class="componentPanel">
+
+<h4>Component Monitor</h4>
+
+<table class="table table-dark table-bordered">
+
+<thead>
+<tr>
+<th>ID</th>
+<th>Component</th>
+<th>Value</th>
+<th>Edit</th>
+</tr>
+</thead>
+
+<tbody id="componentTable"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- VALUE EDITOR -->
+
+<div id="valueEditor"
+style="
+position:absolute;
+bottom:20px;
+left:240px;
+background:#102a44;
+padding:15px;
+border-radius:10px;
+width:220px;
+display:none;
+">
+
+<h6>Component Value</h6>
+
+<input id="valueInput"
+class="form-control mb-2"
+placeholder="Enter value">
+
+<button class="btn btn-success btn-sm"
+onclick="applyValue()">
+Apply
+</button>
+
+<button class="btn btn-secondary btn-sm"
+onclick="closeValueEditor()">
+Close
+</button>
+
+</div>
+
+
+<div id="iot" class="page">
+
+<h2 class="pageTitle">IoT Simulation Lab</h2>
+<p class="pageSub">Embedded C virtual testing environment</p>
+
+<div class="iotContainer">
+
+<!-- CODE SIMULATOR -->
+
+<div class="iotCard">
+
+<h3>Embedded Code</h3>
+
+<textarea id="iotCode"
+rows="8"
+placeholder="Write embedded C code here..."></textarea>
+
+<button class="btnRun">Run Simulation</button>
+
+</div>
+
+
+<!-- AI CIRCUIT SCANNER -->
+
+<div class="iotCard">
+
+<h3>AI Circuit Scanner</h3>
+
+<input type="file" id="scanInput">
+
+<button class="btnScan" onclick="scanCircuit()">Scan Circuit</button>
+
+<button class="btnCamera" onclick="openCamera()">Use Phone Camera</button>
+
+<p id="scanResult"></p>
+
+<img id="scanPreview">
+
+</div>
+
+
+<!-- COMPONENT VALUE RECOGNITION -->
+
+<div class="iotCard">
+
+<h3>Component Value Recognition</h3>
+
+<input type="file" id="valueScan">
+
+<button class="btnDetect" onclick="scanValues()">Detect Values</button>
+
+<p id="valueResult"></p>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- USER HISTORY -->
+
+<div id="history" class="page">
+
+<h2>User History</h2>
+
+<table class="table table-dark table-bordered">
+
+<thead>
+<tr>
+<th>ID</th>
+<th>Simulation Type</th>
+<th>Result</th>
+<th>Date</th>
+</tr>
+</thead>
+
+<tbody id="historyTable"></tbody>
+
+</table>
+
+<button class="btn btn-primary" onclick="loadHistory()">
+Refresh History
+</button>
+
+</div>
+
+
+<!-- SETTINGS -->
+
+<div id="settings" class="page">
+
+<h2>More / Settings</h2>
+
+<div class="glassCard">
+
+<h3>About Developer</h3>
+
+<p><b>Name:</b> Dhilipan</p>
+
+<p><b>Email:</b> dhilipan1804@outlook.in</p>
+
+</div>
+
+<div class="glassCard">
+
+<h3>Application Info</h3>
+
+<p>.CAT Learning Platform</p>
+
+<p>Version: 1.0</p>
+
+<p>Engineering Toolkit for Electrical & Electronics Learning.</p>
+
+</div>
+
+<div class="glassCard">
+
+<h3>Company Info</h3>
+
+<p>CAT Engineering Tools</p>
+
+<p>Educational software platform.</p>
+
+</div>
+
+</div>
+
+<div id="more" class="page">
+
+<h2>About .CAT Platform</h2>
+
+<div class="glass">
+
+<h3>Developer</h3>
+<p>Dhilipan</p>
+
+<p>Email:</p>
+<p>
+<a href="mailto:dhilipan1804@outlook.in">
+dhilipan1804@outlook.in
+</a>
+</p>
+
+</div>
+
+<div class="glass">
+
+<h3>Application Information</h3>
+
+<p><b>Name:</b> .CAT Learning Platform</p>
+
+<p><b>Version:</b> 1.0</p>
+
+<p><b>Type:</b> Electrical Engineering Toolkit</p>
+
+<p>This application provides tools for circuit simulation,
+electrical calculations, signal analysis and IoT testing.</p>
+
+</div>
+
+<div class="glass">
+
+<h3>Company Information</h3>
+
+<p>CAT Engineering Software</p>
+
+<p>Innovation platform for students and engineers.</p>
+
+</div>
+
+</div>
+
+<!-- LOGIN -->
+
+<div id="login" class="page">
+
+<div class="loginLogo">
+<img src="assets/logo.png" class="loginLogoImg">
+<h2>CAT Engineering Toolkit</h2>
+</div>
+
+<input id="username"
+class="form-control mb-2"
+placeholder="Username">
+
+<input id="password"
+type="password"
+class="form-control mb-2"
+placeholder="Password">
+
+<button class="btn btn-success"
+onclick="login()">
+Login
+</button>
+
+<p id="loginStatus"></p>
+
+</div>
+
+<script src="app.js"></script>
+
+<!-- COMPONENT FULL VIEW MODAL -->
+
+<div id="componentModal"
+style="
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.8);
+z-index:1000;
+overflow:auto">
+
+<div style="
+background:#111;
+color:white;
+width:80%;
+margin:50px auto;
+padding:30px;
+border-radius:10px">
+
+<h2 id="modalName"></h2>
+
+<img id="modalImage" style="width:150px">
+
+<p id="modalDefinition"></p>
+
+<h4>Formula</h4>
+<p id="modalFormula"></p>
+
+<button onclick="closeComponentModal()"
+class="btn btn-danger">
+Close
+</button>
+
+</div>
+
+</div>
+
+<!-- REGISTER -->
+
+<div id="register" class="page">
+
+<h2>User Registration</h2>
+
+<input id="reg_username" class="form-control mb-2" placeholder="Username">
+
+<input id="reg_password" type="password" class="form-control mb-2" placeholder="Password">
+
+<input id="reg_college" class="form-control mb-2" placeholder="College">
+
+<input id="reg_year" class="form-control mb-2" placeholder="Year Passed Out">
+
+<input id="reg_course" class="form-control mb-2" placeholder="Course">
+
+<button class="btn btn-primary" onclick="registerUser()">Register</button>
+
+<p id="registerStatus"></p>
+
+</div>
+
+<!-- BOTTOM NAVIGATION -->
+
+<div class="bottomNav">
+
+<div onclick="showPage('home')">
+🏠
+<p>Home</p>
+</div>
+
+<div onclick="showPage('analysis')">
+📊
+<p>Analysis</p>
+</div>
+
+<div onclick="showPage('simulation')">
+⚡
+<p>Builder</p>
+</div>
+
+<div onclick="showPage('iot')">
+🤖
+<p>IoT</p>
+</div>
+
+<div onclick="showPage('settings')">
+⚙
+<p>More</p>
+</div>
+
+</div>
+
+<script src="app.js"></script>
+<script src="splash.js"></script>
+<script src="calculators.js"></script>
+<script src="circuit-builder.js"></script>
+<script src="analysis.js"></script>
+<script src="graphs.js"></script>
+<script src="iot.js"></script>
+
+
+<div class="glass">
+<h4>Ohm Law</h4>
+<input class="glassInput">
+<button class="glassBtn">Calculate</button>
+</div>
+
+<div onclick="showPage('more')">
+⚙
+<p>More</p>
+</div>
+
+</body>
+
+</html>
