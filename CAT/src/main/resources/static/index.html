@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>.CAT Learning Platform</title>
+  <link rel="icon" href="/assets/logo.png">
+  <!-- KaTeX for LaTeX Formulas -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <!-- Chart.js -->
+  <script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+
+</head>
+
+<body>
+  <!-- SPLASH SCREEN -->
+  <div id="splashScreen">
+    <img src="/assets/logo.png" class="splashLogo">
+    <h1>.CAT Learning Platform</h1>
+    <div class="loader"></div>
+  </div>
+  <!-- UPLOADING OVERLAY -->
+  <div id="uploadOverlay"
+    style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; flex-direction:column; justify-content:center; align-items:center; color:#00e5ff;">
+    <div class="loader" style="border-top-color:#00e5ff;"></div>
+    <h2 class="mt-3">Uploading Process...</h2>
+    <p>Saving to Database</p>
+  </div>
+  <!-- APP WRAPPER -->
+  <div id="app-container" class="app-container">
+    <!-- SIDEBAR -->
+    <nav class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <img src="/assets/logo.png" class="sidebar-logo" alt="CAT Logo">
+        <span class="sidebar-title">.CAT</span>
+      </div>
+      <ul class="sidebar-menu">
+        <li class="menu-item active" onclick="showPage('home'); activateMenu(this)">
+          <span class="icon">🏠</span><span class="text">Home</span>
+        </li>
+        <li class="menu-item" onclick="showPage('simulation'); activateMenu(this)">
+          <span class="icon">⚡</span><span class="text">Simulation</span>
+        </li>
+        <li class="menu-item" onclick="showPage('analysis'); activateMenu(this)">
+          <span class="icon">📊</span><span class="text">Analytics</span>
+        </li>
+        <li class="menu-item" onclick="showPage('breadboard'); activateMenu(this)">
+          <span class="icon">🔌</span><span class="text">Breadboard</span>
+        </li>
+        <li class="menu-item" onclick="showPage('history'); activateMenu(this)">
+          <span class="icon">📜</span><span class="text">User History</span>
+        </li>
+        <li class="menu-item" onclick="showPage('iot'); activateMenu(this)">
+          <span class="icon">🤖</span><span class="text">IoT Simulation</span>
+        </li>
+        <li class="menu-item" onclick="showPage('settings'); activateMenu(this)">
+          <span class="icon">⚙️</span><span class="text">Settings</span>
+        </li>
+        <li class="menu-item" onclick="showPage('about'); activateMenu(this)">
+          <span class="icon">👨‍💻</span><span class="text">About Dev</span>
+        </li>
+      </ul>
+    </nav>
+    <!-- MAIN WRAPPER -->
+    <div class="view-wrapper">
+      <!-- GLOBAL TOPBAR -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button id="menu-toggle" class="menu-toggle-btn">☰</button>
+          <div class="search-bar">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="globalSearch" placeholder="Search tools, circuits, analytics..."
+              oninput="handleSearch(this.value)">
+          </div>
+        </div>
+        <div class="topbar-right">
+          <div class="notif-btn" id="notifBtn" onclick="toggleNotifPanel()">
+            🔔<span class="notif-dot" id="notifDot"></span>
+            <div class="notif-panel" id="notifPanel">
+              <h4>Notifications</h4>
+              <ul id="notifList">
+                <li class="notif-item">✨ v2.0 — Modern UI Redesign is live!</li>
+                <li class="notif-item">🔧 IoT Simulator upgraded with MCU support.</li>
+                <li class="notif-item">📊 Analytics now has A-Z calculators.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="editor-badge glass-card" id="editorBadge"
+            style="display:none; padding:4px 10px; border-color:#00e5ff; margin-right:10px; color:#00e5ff; font-weight:bold; font-size:12px; align-items:center; gap:5px;">
+            <span>🛠️ Editor Mode</span>
+          </div>
+          <div class="profile-avatar">
+            <div class="avatar-initials" title="Current User" onclick="toggleAuth('login')">US</div>
+          </div>
+        </div>
+      </header>
+      <!-- MOBILE TOPBAR -->
+      <header class="mobile-topbar">
+        <div class="mobile-topbar-left">
+          <button id="mobile-toggle" class="menu-toggle-btn">☰</button>
+          <img src="/assets/logo.png" class="mobile-logo" alt="Logo">
+          <span class="mobile-title">.CAT Engineering</span>
+        </div>
+        <div class="notif-btn" onclick="toggleNotifPanel()">🔔<span class="notif-dot"></span></div>
+      </header>
+      <!-- PAGE CONTENT -->
+      <main id="main-content">
+        <div id="home" class="page active">
+          <div class="home-container">
+            <!-- COMPONENT LEARNING CAROUSEL -->
+            <section class="home-section">
+              <h3 class="section-title">📚 Component Learning</h3>
+              <div class="carousel-wrapper glass-card">
+                <button class="carousel-btn carousel-prev" onclick="moveCarousel(-1)">&#8249;</button>
+                <div class="carousel-track" id="carouselTrack">
+                  <!-- Slides injected by home.js -->
+                </div>
+                <button class="carousel-btn carousel-next" onclick="moveCarousel(1)">&#8250;</button>
+                <div class="carousel-dots" id="carouselDots"></div>
+              </div>
+            </section>
+            <!-- QUICK TOOLKIT -->
+            <section class="home-section">
+              <h3 class="section-title">🛠️ Quick Toolkit</h3>
+              <div class="tools-grid">
+                <div class="tool-card glass-card"
+                  onclick="showPage('simulation'); activateMenu(document.querySelectorAll('.menu-item')[1])">
+                  <div class="tool-icon">⚡</div>
+                  <div class="tool-title">Simulation</div>
+                </div>
+                <div class="tool-card glass-card"
+                  onclick="showPage('analysis'); activateMenu(document.querySelectorAll('.menu-item')[2])">
+                  <div class="tool-icon">📊</div>
+                  <div class="tool-title">Analytics</div>
+                </div>
+                <div class="tool-card glass-card"
+                  onclick="showPage('breadboard'); activateMenu(document.querySelectorAll('.menu-item')[3])">
+                  <div class="tool-icon">🔌</div>
+                  <div class="tool-title">Breadboard</div>
+                </div>
+                <div class="tool-card glass-card"
+                  onclick="showPage('iot'); activateMenu(document.querySelectorAll('.menu-item')[5])">
+                  <div class="tool-icon">🤖</div>
+                  <div class="tool-title">IoT Lab</div>
+                </div>
+                <div class="tool-card glass-card"
+                  onclick="showPage('analysis'); activateMenu(document.querySelectorAll('.menu-item')[2])">
+                  <div class="tool-icon">🧮</div>
+                  <div class="tool-title">Calculators</div>
+                </div>
+                <div class="tool-card glass-card"
+                  onclick="showPage('settings'); activateMenu(document.querySelectorAll('.menu-item')[6])">
+                  <div class="tool-icon">⚙️</div>
+                  <div class="tool-title">Settings</div>
+                </div>
+              </div>
+            </section>
+            <!-- COMPONENT LIBRARY -->
+            <section class="home-section">
+              <h3 class="section-title">🔬 Component Library</h3>
+              <div class="component-grid" id="homeComponentGrid">
+                <!-- Injected by home.js -->
+              </div>
+            </section>
+            <!-- RECENT ACTIVITY -->
+            <section class="home-section">
+              <h3 class="section-title">📋 Recent Activity</h3>
+              <div class="activity-card glass-card" id="homeActivity">
+                <p class="text-secondary text-center" style="padding:20px">Loading activity...</p>
+              </div>
+            </section>
+            <div style="height:80px"></div>
+          </div>
+        </div>
+        <div id="analysis" class="page">
+          <div class="analysis-container">
+            <h2 class="page-title">⚡ Electrical Analysis Lab</h2>
+            <p class="page-sub">All electrical calculators in one place</p>
+            <div class="analysis-split">
+              <!-- LEFT: Calculators -->
+              <div class="analysis-left">
+                <div class="calc-grid">
+                  <!-- Current Calculator -->
+                  <div class="calc-card glass-card">
+                    <div class="calc-icon">⚡</div>
+                    <h5>Current (I = V/R)</h5>
+                    <input id="v_i" class="form-control mb-2" placeholder="Voltage (V)">
+                    <input id="r_i" class="form-control mb-2" placeholder="Resistance (Ω)">
+                    <button class="btn-calc" onclick="calcCurrent()">Calculate</button>
+                    <p class="calc-result" id="currentResult"></p>
+                  </div>
+                  <!-- Voltage Calculator -->
+                  <div class="calc-card glass-card">
+                    <div class="calc-icon">🔋</div>
+                    <h5>Voltage (V = I×R)</h5>
+                    <input id="i_v" class="form-control mb-2" placeholder="Current (A)">
+                    <input id="r_v" class="form-control mb-2" placeholder="Resistance (Ω)">
+                    <button class="btn-calc" onclick="calcVoltage()">Calculate</button>
+                    <p class="calc-result" id="voltageResult"></p>
+                  </div>
+                  <!-- Resistance Calculator -->
+                  <div class="calc-card glass-card">
+                    <div class="calc-icon">⎍</div>
+                    <h5>Resistance (R = V/I)</h5>
+                    <input id="v_r" class="form-control mb-2" placeholder="Voltage (V)">
+                    <input id="i_r" class="form-control mb-2" placeholder="Current (A)">
+                    <button class="btn-calc" onclick="calcResistance()">Calculate</button>
+                    <p class="calc-result" id="resistanceResult"></p>
+                  </div>
+                  <!-- Power Calculator -->
+                  <div class="calc-card glass-card">
+                    <div class="calc-icon">💡</div>
+                    <h5>Power (P = V×I)</h5>
+                    <input id="v_p" class="form-control mb-2" placeholder="Voltage (V)">
+                    <input id="i_p" class="form-control mb-2" placeholder="Current (A)">
+                    <button class="btn-calc" onclick="calcPower()">Calculate</button>
+                    <p class="calc-result" id="powerResult"></p>
+                  </div>
+                  <!-- Ohm's Law -->
+                  <div class="calc-card glass-card">
+                    <div class="calc-icon">🔌</div>
+                    <h5>Ohm's Law</h5>
+                    <input id="voltage" class="form-control mb-2" placeholder="Voltage (V)">
+                    <input id="resistance" class="form-control mb-2" placeholder="Resistance (Ω)">
+                    <button class="btn-calc" onclick="ohmCalc()">Calculate</button>
+                    <p class="calc-result" id="ohmResult"></p>
+                  </div>
+                  <!-- Series Resistance -->
+                  <div class="calc-card glass-card">
+                    <div class="calc-icon">⎍⎍</div>
+                    <h5>Series Resistance</h5>
+                    <input id="seriesR" class="form-control mb-2" placeholder="Values e.g. 10,20,30">
+                    <button class="btn-calc" onclick="seriesRes()">Calculate</button>
+                    <p class="calc-result" id="seriesResult"></p>
+                  </div>
+                  <!-- Parallel Resistance -->
+                  <div class="calc-card glass-card">
+                    <div class="calc-icon">⎍|⎍</div>
+                    <h5>Parallel Resistance</h5>
+                    <input id="parallelR" class="form-control mb-2" placeholder="Values e.g. 10,20">
+                    <button class="btn-calc" onclick="parallelRes()">Calculate</button>
+                    <p class="calc-result" id="parallelResult"></p>
+                  </div>
+                  <!-- Inductive Reactance -->
+                  <div class="calc-card glass-card">
+                    <div class="calc-icon">∿</div>
+                    <h5>Inductive Reactance (XL)</h5>
+                    <input id="freq_l" class="form-control mb-2" placeholder="Frequency (Hz)">
+                    <input id="inductance" class="form-control mb-2" placeholder="Inductance (H)">
+                    <button class="btn-calc" onclick="calcXL()">Calculate</button>
+                    <p class="calc-result" id="xlResult"></p>
+                  </div>
+                  <!-- Capacitive Reactance -->
+                  <div class="calc-card glass-card">
+                    <div class="calc-icon">||</div>
+                    <h5>Capacitive Reactance (XC)</h5>
+                    <input id="freq_c" class="form-control mb-2" placeholder="Frequency (Hz)">
+                    <input id="capacitance" class="form-control mb-2" placeholder="Capacitance (F)">
+                    <button class="btn-calc" onclick="calcXC()">Calculate</button>
+                    <p class="calc-result" id="xcResult"></p>
+                  </div>
+                  <!-- Logic Gate -->
+                  <div class="calc-card glass-card">
+                    <div class="calc-icon">🔀</div>
+                    <h5>Logic Gate Simulator</h5>
+                    <select id="logicGate" class="form-control mb-2">
+                      <option>AND</option>
+                      <option>OR</option>
+                      <option>NOT</option>
+                      <option>NAND</option>
+                      <option>NOR</option>
+                      <option>XOR</option>
+                    </select>
+                    <input id="logicA" class="form-control mb-2" placeholder="Input A (0/1)">
+                    <input id="logicB" class="form-control mb-2" placeholder="Input B (0/1)">
+                    <button class="btn-calc" onclick="logicSim()">Simulate</button>
+                    <p class="calc-result" id="logicResult"></p>
+                  </div>
+                  <!-- K-Map Simplifier -->
+                  <div class="calc-card glass-card">
+                    <div class="calc-icon">🔀</div>
+                    <h5>Boolean Simplifier</h5>
+                    <input id="kmapInput" class="form-control mb-2" placeholder="e.g. A.B + A.B'">
+                    <button class="btn-calc" onclick="simplifyBoolean()">Simplify (K-Map)</button>
+                    <p class="calc-result" id="kmapResult" style="font-size:14px; margin-top:10px"></p>
+                  </div>
+                  <!-- Heat Dissipation -->
+                  <div class="calc-card glass-card">
+                    <div class="calc-icon">🌡️</div>
+                    <h5>Heat Dissipation</h5>
+                    <input id="heatPower" class="form-control mb-2" placeholder="Power (W)">
+                    <input id="heatArea" class="form-control mb-2" placeholder="Area (cm²)">
+                    <input id="heatAmbient" class="form-control mb-2" placeholder="Ambient Temp (°C) [opt]">
+                    <button class="btn-calc" onclick="calcHeatDissipation()">Calculate</button>
+                    <p class="calc-result" id="heatResult" style="font-size:14px; margin-top:10px"></p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- RIGHT: Oscilloscope & Controls -->
+              <div class="analysis-right">
+                <div class="scope-panel glass-card">
+                  <div class="scope-header">
+                    <div class="calc-icon">〜</div>
+                    <h5>Oscilloscope Viewer</h5>
+                    <div class="sim-controls">
+                      <button class="btn-sim-control" id="simStop" title="Stop"
+                        onclick="toggleSimState('stop')">⏹</button>
+                      <button class="btn-sim-control" id="simPause" title="Pause"
+                        onclick="toggleSimState('pause')">⏸</button>
+                      <button class="btn-sim-control" id="simPlay" title="Play"
+                        onclick="toggleSimState('play')">▶</button>
+                    </div>
+                  </div>
+                  <div class="scope-settings mt-3">
+                    <input id="oscFreq" class="form-control form-control-sm mb-2" placeholder="Freq (Hz)">
+                    <input id="oscAmp" class="form-control form-control-sm mb-2" placeholder="Amp">
+                    <select id="signalType" class="form-control form-control-sm mb-2">
+                      <option>Sine</option>
+                      <option>Square</option>
+                      <option>Triangle</option>
+                    </select>
+                    <button class="btn-calc w-100" onclick="drawWave()">Generate Wave</button>
+                  </div>
+                  <canvas id="scope" width="500" height="250"
+                    style="width:100%; height:300px; margin-top:15px; border-radius:8px; background: #05101a;"></canvas>
+
+                  <div class="signal-gen-box mt-4">
+                    <h5>📡 Signal Generator</h5>
+                    <canvas id="signalCanvas" width="300" height="100"
+                      style="width:100%; border-radius:8px; background: #05101a;"></canvas>
+                    <div class="d-flex gap-2 mt-2">
+                      <input id="signalFreq" class="form-control form-control-sm" placeholder="Freq (Hz)">
+                      <input id="signalAmp" class="form-control form-control-sm" placeholder="Amp">
+                      <button class="btn-calc btn-sm" onclick="generateSignal()">Gen</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="text-center mt-4">
+              <button class="btn-glass" onclick="downloadOhmReport()">📥 Download Quick Report</button>
+              <button class="btn-primary-glass ms-3" onclick="downloadAtoZReport()">📄 Generate Full A-to-Z
+                Report</button>
+            </div>
+          </div>
+        </div>
+        <div id="simulation" class="page">
+          <div class="sim-layout">
+            <!-- LEFT PANEL: Component Palette -->
+            <div class="sim-left-panel glass-card">
+              <h4>🧩 Components</h4>
+              <p class="panel-sub">Drag to canvas</p>
+              <div class="comp-palette">
+                <div class="palette-item" draggable="true" ondragstart="startDrag(event,'resistor')">⎍ Resistor</div>
+                <div class="palette-item" draggable="true" ondragstart="startDrag(event,'capacitor')">|| Capacitor</div>
+                <div class="palette-item" draggable="true" ondragstart="startDrag(event,'inductor')">∿ Inductor</div>
+                <div class="palette-item" draggable="true" ondragstart="startDrag(event,'diode')">▶| Diode</div>
+                <div class="palette-item" draggable="true" ondragstart="startDrag(event,'transistor')">⤴ Transistor
+                </div>
+                <div class="palette-item" draggable="true" ondragstart="startDrag(event,'mosfet')">⟛ MOSFET</div>
+                <div class="palette-item" draggable="true" ondragstart="startDrag(event,'led')">🔆 LED</div>
+                <div class="palette-item" draggable="true" ondragstart="startDrag(event,'battery')">🔋 Battery</div>
+                <div class="palette-item" draggable="true" ondragstart="startDrag(event,'ground')">⏚ Ground</div>
+                <div class="palette-item" draggable="true" ondragstart="startDrag(event,'switch')">⎔ Switch</div>
+                <div class="palette-item" draggable="true" ondragstart="startDrag(event,'relay')">⏦ Relay</div>
+                <div class="palette-item" draggable="true" ondragstart="startDrag(event,'ic')">⑃ IC</div>
+              </div>
+              <hr>
+              <button class="btn-glass w-100 mt-2" onclick="runSimulation()">▶ Run Simulation</button>
+              <button class="btn-glass-outline w-100 mt-2" onclick="clearBoard()">🗑 Clear Board</button>
+              <button class="btn-glass-outline w-100 mt-2" onclick="undoAction()">↩ Undo</button>
+              <button class="btn-glass-outline w-100 mt-2" onclick="saveCircuit()">💾 Save</button>
+              <button class="btn-glass-outline w-100 mt-2" onclick="loadCircuit()">📂 Load</button>
+              <button class="btn-glass-outline w-100 mt-2" onclick="exportCircuit()">📸 Export</button>
+            </div>
+            <!-- CENTER: Canvas -->
+            <div class="sim-center-panel">
+              <div class="sim-toolbar" style="display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
+                <button class="sim-tool-btn" id="wireModeBtn" onclick="wireMode()">🔗 Wire Tool</button>
+                <button class="sim-tool-btn" onclick="openValueEditor()">✏️ Set Value</button>
+                <button class="sim-tool-btn" onclick="suggestCircuit()">💡 Suggest</button>
+                <button class="sim-tool-btn btn-success" id="simRunBtn" onclick="runSimulation()">▶ Run Sim</button>
+                <input type="text" id="simSearch" class="form-control form-control-sm"
+                  placeholder="Search Components..."
+                  style="width: 150px; background: #081426; color: white; border: 1px solid #1a3a66;">
+                <button class="sim-tool-btn btn-info" id="simRunAiBtn" onclick="scanCircuit()"
+                  style="background: linear-gradient(135deg, #8b5cf6, #3b82f6); color: white; border: none; font-weight: bold; white-space: nowrap; height: fit-content; align-self: center; padding: 6px 12px;">🧠
+                  Run AI Scan</button>
+                <span class="sim-status" id="simStatus" style="font-weight:bold; color:#00e5ff;">Ready</span>
+              </div>
+              <div class="canvas-wrapper" ondragover="event.preventDefault()" ondrop="dropComponent(event)">
+                <svg id="workspace" class="circuit-canvas"></svg>
+                <!-- Floating AI Scanner FAB -->
+                <div style="position: absolute; bottom: 20px; right: 20px;">
+                  <button class="btn-info" onclick="document.getElementById('scanInput')?.click()"
+                    style="width:60px; height:60px; border-radius:50%; background: linear-gradient(135deg, #00e5ff, #3b82f6); color:#1a1a1a; font-size:24px; border:none; box-shadow:0 6px 20px rgba(0,229,255,0.5); cursor:pointer; display:flex; align-items:center; justify-content:center;"
+                    title="AI Circuit Scan">
+                    📷
+                  </button>
+                </div>
+              </div>
+            </div>
+            <!-- RIGHT PANEL: Component Monitor -->
+            <div class="sim-right-panel glass-card">
+              <h4>📟 Monitor</h4>
+              <div class="monitor-stats">
+                <div class="stat-card">
+                  <span class="stat-label">Voltage</span>
+                  <span class="stat-value" id="monVoltage">—</span>
+                  <span class="stat-unit">V</span>
+                </div>
+                <div class="stat-card">
+                  <span class="stat-label">Current</span>
+                  <span class="stat-value" id="monCurrent">—</span>
+                  <span class="stat-unit">mA</span>
+                </div>
+                <div class="stat-card">
+                  <span class="stat-label">Power</span>
+                  <span class="stat-value" id="monPower">—</span>
+                  <span class="stat-unit">mW</span>
+                </div>
+              </div>
+              <h5 class="mt-3">Components</h5>
+              <table class="table table-dark table-sm table-bordered mt-1">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Type</th>
+                    <th>Value</th>
+                  </tr>
+                </thead>
+                <tbody id="componentTable"></tbody>
+              </table>
+              <!-- Value Editor -->
+              <div id="valueEditor" style="display:none; margin-top:10px;">
+                <input id="valueInput" class="form-control mb-2 form-control-sm" placeholder="Enter value">
+                <button class="btn btn-success btn-sm" onclick="applyValue()">Apply</button>
+                <button class="btn btn-secondary btn-sm" onclick="closeValueEditor()">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="breadboard" class="page">
+          <div class="bb-layout">
+            <!-- LEFT: Palette -->
+            <div class="bb-left-panel glass-card">
+              <h4>🔧 Components</h4>
+              <p class="panel-sub">Click to place on board</p>
+              <div class="bb-palette">
+                <button class="bb-comp-btn" onclick="selectBBComp('resistor')">⎍ Resistor</button>
+                <button class="bb-comp-btn" onclick="selectBBComp('capacitor')">|| Capacitor</button>
+                <button class="bb-comp-btn" onclick="selectBBComp('inductor')">∿ Inductor</button>
+                <button class="bb-comp-btn" onclick="selectBBComp('led')">🔆 LED</button>
+                <button class="bb-comp-btn" onclick="selectBBComp('diode')">▶| Diode</button>
+                <button class="bb-comp-btn" onclick="selectBBComp('transistor')">⤴ Transistor</button>
+                <button class="bb-comp-btn" onclick="selectBBComp('ic')">⑃ IC</button>
+                <button class="bb-comp-btn" onclick="selectBBComp('wire')">── Wire</button>
+              </div>
+              <hr>
+              <div class="bb-power-ctl">
+                <label>Power Supply (V)</label>
+                <input id="bbVoltage" type="number" class="form-control mb-2" placeholder="5V" value="5">
+                <button class="btn-glass w-100" onclick="applyBBPower()">⚡ Apply Power</button>
+              </div>
+              <hr>
+              <button class="btn-glass-outline w-100 mt-2" onclick="clearBreadboard()">🗑 Clear Board</button>
+              <div class="bb-selected mt-2" id="bbSelectedComp">Selected: None</div>
+            </div>
+            <!-- CENTER: Breadboard -->
+            <div class="bb-center-panel">
+              <div class="bb-wrapper glass-card" style="position: relative;">
+                <svg id="bbWireLayer"
+                  style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;"></svg>
+                <div class="bb-label-row">
+                  <span class="bb-power-rail positive">+</span>
+                  <div class="bb-holes-row" id="bbTopRail"></div>
+                  <span class="bb-power-rail positive">+</span>
+                </div>
+                <div class="bb-label-row">
+                  <span class="bb-power-rail negative">−</span>
+                  <div class="bb-holes-row" id="bbTopNegRail"></div>
+                  <span class="bb-power-rail negative">−</span>
+                </div>
+                <div class="bb-divider"></div>
+                <div class="bb-main-area" id="bbMainArea"></div>
+                <div class="bb-divider"></div>
+                <div class="bb-label-row">
+                  <span class="bb-power-rail positive">+</span>
+                  <div class="bb-holes-row" id="bbBotRail"></div>
+                  <span class="bb-power-rail positive">+</span>
+                </div>
+                <div class="bb-label-row">
+                  <span class="bb-power-rail negative">−</span>
+                  <div class="bb-holes-row" id="bbBotNegRail"></div>
+                  <span class="bb-power-rail negative">−</span>
+                </div>
+              </div>
+              <div class="bb-status glass-card mt-3" id="bbStatus">
+                Status: Idle — Select a component and click a hole to place it.
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="iot" class="page">
+          <div class="iot-layout">
+            <h2 class="page-title">🤖 IoT Simulation Lab</h2>
+            <p class="page-sub">Virtual microcontroller and sensor testing environment</p>
+            <!-- MCU SELECTOR -->
+            <section class="iot-section">
+              <h4>🖥️ Microcontroller</h4>
+              <div class="mcu-grid">
+                <div class="mcu-card glass-card" id="mcu-uno" onclick="selectMCU('uno')">
+                  <div class="mcu-icon">🟦</div>
+                  <strong>Arduino UNO</strong>
+                  <small>ATmega328P · 14 I/O · 6 PWM</small>
+                </div>
+                <div class="mcu-card glass-card" id="mcu-nano" onclick="selectMCU('nano')">
+                  <div class="mcu-icon">🟩</div>
+                  <strong>Arduino Nano</strong>
+                  <small>ATmega328P · 22 I/O · 6 PWM</small>
+                </div>
+                <div class="mcu-card glass-card" id="mcu-esp32" onclick="selectMCU('esp32')">
+                  <div class="mcu-icon">🟥</div>
+                  <strong>ESP32</strong>
+                  <small>Dual Core · WiFi · BT · 34 GPIO</small>
+                </div>
+                <div class="mcu-card glass-card" id="mcu-esp8266" onclick="selectMCU('esp8266')">
+                  <div class="mcu-icon">🟧</div>
+                  <strong>ESP8266</strong>
+                  <small>Single Core · WiFi · 11 GPIO</small>
+                </div>
+              </div>
+              <div class="mcu-info glass-card" id="mcuInfo">
+                Select a microcontroller above to view its specifications.
+              </div>
+            </section>
+            <!-- SENSOR LIBRARY -->
+            <section class="iot-section">
+              <h4>📡 Sensor Library</h4>
+              <div class="sensor-grid">
+                <div class="sensor-card glass-card" onclick="loadSensorExample('temperature')">
+                  <div class="sensor-icon">🌡️</div>
+                  <strong>Temperature</strong>
+                  <small>DHT11/DS18B20</small>
+                </div>
+                <div class="sensor-card glass-card" onclick="loadSensorExample('ultrasonic')">
+                  <div class="sensor-icon">📻</div>
+                  <strong>Ultrasonic</strong>
+                  <small>HC-SR04</small>
+                </div>
+                <div class="sensor-card glass-card" onclick="loadSensorExample('ldr')">
+                  <div class="sensor-icon">☀️</div>
+                  <strong>LDR</strong>
+                  <small>Light Dependent</small>
+                </div>
+                <div class="sensor-card glass-card" onclick="loadSensorExample('ir')">
+                  <div class="sensor-icon">🔴</div>
+                  <strong>IR Sensor</strong>
+                  <small>Obstacle / Line</small>
+                </div>
+                <div class="sensor-card glass-card" onclick="loadSensorExample('gas')">
+                  <div class="sensor-icon">💨</div>
+                  <strong>Gas Sensor</strong>
+                  <small>MQ-2 / MQ-135</small>
+                </div>
+                <div class="sensor-card glass-card" onclick="loadSensorExample('humidity')">
+                  <div class="sensor-icon">💧</div>
+                  <strong>Humidity</strong>
+                  <small>DHT11/DHT22</small>
+                </div>
+              </div>
+            </section>
+            <!-- CODE EDITOR + SIMULATION -->
+            <section class="iot-section">
+              <div class="iot-editor-layout">
+                <div class="iot-editor-panel glass-card">
+                  <h4>💻 Embedded C Editor</h4>
+                  <div class="iot-editor-toolbar">
+                    <span class="mcu-badge" id="activeMCU">MCU: None selected</span>
+                    <button class="btn-glass btn-sm" onclick="runIoTSimulation()">▶ Run</button>
+                    <button class="btn-glass-outline btn-sm" onclick="clearIoTCode()">🗑 Clear</button>
+                  </div>
+                  <textarea id="iotCode" class="iot-code-editor" rows="14"
+                    placeholder="// Select a sensor above to load example code&#10;// Or write your embedded C code here&#10;void setup() {&#10;  Serial.begin(9600);&#10;}&#10;&#10;void loop() {&#10;  // Your code here&#10;}"></textarea>
+                  <div class="iot-output glass-card" id="iotOutput">
+                    <span class="text-secondary">Simulation output will appear here...</span>
+                  </div>
+                </div>
+                <div class="iot-scanner-panel">
+                  <!-- AI Circuit Scanner -->
+                  <div class="glass-card iot-scanner-card">
+                    <h4>🔍 AI Circuit Scanner</h4>
+                    <p class="panel-sub">Upload a circuit image for analysis</p>
+                    <label class="file-upload-label">
+                      <input type="file" id="scanInput" accept="image/*" onchange="previewScan(this)">
+                      📁 Choose Image
+                    </label>
+                    <img id="scanPreview" class="scan-preview" style="display:none;">
+                    <button class="btn-glass w-100 mt-2" onclick="scanCircuit()">🔍 Scan Circuit</button>
+                    <div class="iot-result" id="scanResult">Upload an image to begin scanning.</div>
+                  </div>
+                  <!-- Component Value Recognition -->
+                  <div class="glass-card iot-scanner-card mt-3">
+                    <h4>🎨 Resistor Color Band</h4>
+                    <p class="panel-sub">Upload a resistor image to detect value</p>
+                    <label class="file-upload-label">
+                      <input type="file" id="valueScan" accept="image/*" onchange="previewValueScan(this)">
+                      📁 Choose Image
+                    </label>
+                    <img id="valueScanPreview" class="scan-preview" style="display:none;">
+                    <button class="btn-glass w-100 mt-2" onclick="scanValues()">🎨 Detect Value</button>
+                    <div class="iot-result" id="valueResult">Upload a resistor image to detect its value.</div>
+                  </div>
+                </div>
+              </div>
+            </section>
+            <!-- MQTT LIVE TELEMETRY -->
+            <section class="iot-section mt-4">
+              <div class="glass-card" style="display:flex; flex-direction:column; gap:15px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <h4 style="margin:0">🌐 MQTT Telemetry Dashboard</h4>
+                  <div>
+                    <span id="mqttStatus" style="margin-right:15px; color:#ef4444; font-weight:bold;">🔴 MQTT
+                      Disconnected</span>
+                    <button class="btn-glass btn-sm" onclick="startMQTTSimulator()">Connect</button>
+                    <button class="btn-danger-glass btn-sm" onclick="stopMQTTSimulator()">Disconnect</button>
+                  </div>
+                </div>
+                <div style="display:flex; gap:20px; flex-wrap:wrap;">
+                  <div style="flex:2; min-width:300px; background:rgba(0,0,0,0.2); padding:10px; border-radius:10px;">
+                    <canvas id="mqttChart" height="120"></canvas>
+                  </div>
+                  <div style="flex:1; display:flex; flex-direction:column; gap:10px; min-width:200px;">
+                    <div class="stat-card glass-card" style="padding:15px">
+                      <span class="stat-label">Temperature</span>
+                      <strong class="stat-value" id="mqttTemp" style="color:#ef4444; font-size:24px;">-- °C</strong>
+                    </div>
+                    <div class="stat-card glass-card" style="padding:15px">
+                      <span class="stat-label">Humidity</span>
+                      <strong class="stat-value" id="mqttHum" style="color:#06b6d4; font-size:24px;">-- %</strong>
+                    </div>
+                    <div class="stat-card glass-card" style="padding:15px">
+                      <span class="stat-label">Distance</span>
+                      <strong class="stat-value" id="mqttDist" style="color:#10b981; font-size:24px;">-- cm</strong>
+                    </div>
+                  </div>
+                </div>
+                <div id="mqttTopicLog" class="glass-card"
+                  style="height:120px; overflow-y:auto; background:#071a33; padding:10px; border-radius:8px;">
+                  <span style="color:#8892b0; font-family:monospace; font-size:12px">Waiting for connection...</span>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+        <div id="history" class="page">
+          <div class="history-container">
+            <h2 class="page-title">📜 User Activity History</h2>
+            <p class="page-sub">Track your simulations, calculations and circuit builds</p>
+            <!-- Filter Bar -->
+            <div class="history-filters glass-card">
+              <button class="filter-btn active" onclick="filterHistory('all', this)">All</button>
+              <button class="filter-btn" onclick="filterHistory('Simulation', this)">⚡ Simulation</button>
+              <button class="filter-btn" onclick="filterHistory('Calc', this)">🧮 Calculations</button>
+              <button class="filter-btn" onclick="filterHistory('IoT', this)">🤖 IoT</button>
+              <button class="filter-btn" onclick="filterHistory('Circuit', this)">🔌 Circuits</button>
+              <button class="filter-btn danger-btn" onclick="clearHistory()">🗑 Clear All</button>
+            </div>
+            <!-- Timeline -->
+            <div class="history-timeline" id="historyTimeline">
+              <!-- Items injected by app.js -->
+            </div>
+          </div>
+        </div>
+        <div id="settings" class="page">
+          <div class="settings-layout">
+            <h2 class="page-title">⚙️ Settings & Preferences</h2>
+            <p class="page-sub">Customise your .CAT Engineering experience</p>
+            <div class="settings-grid">
+              <!-- Theme -->
+              <div class="settings-card glass-card">
+                <div class="settings-card-header">
+                  <span class="settings-icon">🎨</span>
+                  <h4>Theme Control</h4>
+                </div>
+                <div class="setting-row">
+                  <div>
+                    <strong>Dark Mode</strong>
+                    <p class="setting-desc">Switch between dark and light themes</p>
+                  </div>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="themeToggle" checked onchange="toggleTheme()">
+                    <span class="slider round"></span>
+                  </label>
+                </div>
+                <div class="setting-row">
+                  <div>
+                    <strong>UI Animations</strong>
+                    <p class="setting-desc">Enable smooth transitions and effects</p>
+                  </div>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="animToggle" checked onchange="toggleAnimations()">
+                    <span class="slider round"></span>
+                  </label>
+                </div>
+              </div>
+              <!-- Notifications -->
+              <div class="settings-card glass-card">
+                <div class="settings-card-header">
+                  <span class="settings-icon">🔔</span>
+                  <h4>Notifications</h4>
+                </div>
+                <div class="setting-row">
+                  <div>
+                    <strong>App Updates</strong>
+                    <p class="setting-desc">Receive feature and update alerts</p>
+                  </div>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="notifToggle" checked>
+                    <span class="slider round"></span>
+                  </label>
+                </div>
+                <div class="setting-row">
+                  <div>
+                    <strong>Offline Mode</strong>
+                    <p class="setting-desc">Cache content for offline use</p>
+                  </div>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="offlineToggle">
+                    <span class="slider round"></span>
+                  </label>
+                </div>
+              </div>
+              <!-- Account -->
+              <div class="settings-card glass-card">
+                <div class="settings-card-header">
+                  <span class="settings-icon">👤</span>
+                  <h4>Account</h4>
+                </div>
+                <div class="profile-display">
+                  <div class="avatar-large">US</div>
+                  <div>
+                    <strong>Student User</strong>
+                    <p class="setting-desc">Engineering Platform Member</p>
+                  </div>
+                </div>
+                <button class="btn-glass-outline w-100 mt-3" onclick="clearHistory()">🗑 Clear User History</button>
+              </div>
+              <!-- App Info -->
+              <div class="settings-card glass-card">
+                <div class="settings-card-header">
+                  <span class="settings-icon">ℹ️</span>
+                  <h4>Application Info</h4>
+                </div>
+                <div class="info-row"><span>Name</span><strong>.CAT Learning Platform</strong></div>
+                <div class="info-row"><span>Version</span><strong>2.0 Modern</strong></div>
+                <div class="info-row"><span>Type</span><strong>Engineering Toolkit</strong></div>
+                <div class="info-row"><span>Developer</span><strong>Dhilipan S</strong></div>
+                <div class="info-row"><span>Contact</span><a
+                    href="mailto:dhilipan1804@outlook.in">dhilipan1804@outlook.in</a></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="about" class="page">
+          <div class="about-container glass-card"
+            style="max-width:800px; margin:40px auto; padding:40px; text-align:center;">
+            <div
+              style="width:120px; height:120px; border-radius:50%; background:linear-gradient(135deg, #00e5ff, #8b5cf6); margin:0 auto 20px; display:flex; align-items:center; justify-content:center; color:white; font-size:48px; font-weight:bold; box-shadow:0 0 30px rgba(0,229,255,0.4)">
+              DS</div>
+            <h1 style="color:#e6f1ff; margin-bottom:10px; font-size:36px;">Dhilipan S</h1>
+            <h3 style="color:#00e5ff; margin-bottom:20px; font-weight:normal;">Electronics Engineering Student &
+              Developer</h3>
+            <p style="color:#8892b0; font-size:18px; line-height:1.6; max-width:600px; margin:0 auto 30px;">
+              Passionate about bridging the gap between hardware electronics and modern software architectures. Creator
+              of the .CAT Learning Platform to help students simulate, analyze, and understand complex circuits
+              effortlessly.
+            </p>
+            <div style="display:flex; justify-content:center; gap:20px; margin-bottom:20px;">
+              <a href="mailto:dhilipan1804@outlook.in" class="btn-primary-glass" style="text-decoration:none">📧
+                Mail</a>
+              <a href="https://github.com/dhilipan182005" class="btn-glass-outline" style="text-decoration:none">🐙
+                GitHub</a>
+              <a href="https://www.linkedin.com/in/dhilipan-s" target="_blank" class="btn-glass-outline"
+                style="text-decoration:none; color:#0a66c2; border-color:#0a66c2;">💼 LinkedIn</a>
+            </div>
+            <div style="display:flex; justify-content:center; margin-bottom:40px;">
+              <a href="https://jjcet.ac.in/" target="_blank" class="btn-glass-outline"
+                style="text-decoration:none; color: #00e5ff; border-color: #00e5ff; display: flex; align-items: center; gap: 8px;">🎓
+                J.J. College of Engineering and Technology Profile</a>
+            </div>
+            <hr style="border-color:rgba(255,255,255,0.1); margin-bottom:30px;">
+            <h4 style="color:#e6f1ff; margin-bottom:15px;">App Specifications (v3.0.0)</h4>
+            <div class="mcu-spec-grid" style="text-align:left; max-width:500px; margin:0 auto;">
+              <div class="mcu-spec-row"><span>Frontend</span><strong>HTML5, CSS3, Java</strong>
+              </div>
+              <div class="mcu-spec-row"><span>Simulation</span><strong>SVG DOM Manipulation, Interactive Nodes</strong>
+              </div>
+              <div class="mcu-spec-row"><span>Analytics</span><strong>KaTeX, Chart.js, K-Map Boolean Logic</strong>
+              </div>
+              <div class="mcu-spec-row"><span>Architecture</span><strong>Role-Based Access Control, Local Storage
+                  State</strong></div>
+            </div>
+          </div>
+        </div>
+      </main><!-- #page-content -->
+      <!-- MOBILE BOTTOM TABS -->
+      <nav class="mobile-bottom-tabs">
+        <div class="tab-item active" onclick="showPage('home'); activateMobileTab(this)">
+          <span class="tab-icon">🏠</span><span class="tab-label">Home</span>
+        </div>
+        <div class="tab-item" onclick="showPage('analysis'); activateMobileTab(this)">
+          <span class="tab-icon">📊</span><span class="tab-label">Analysis</span>
+        </div>
+        <div class="tab-item" onclick="showPage('simulation'); activateMobileTab(this)">
+          <span class="tab-icon">⚡</span><span class="tab-label">Builder</span>
+        </div>
+        <div class="tab-item" onclick="showPage('iot'); activateMobileTab(this)">
+          <span class="tab-icon">🤖</span><span class="tab-label">IoT</span>
+        </div>
+        <div class="tab-item" onclick="showPage('about'); activateMobileTab(this)">
+          <span class="tab-icon">👨‍💻</span><span class="tab-label">About</span>
+        </div>
+      </nav>
+    </div><!-- .view-wrapper -->
+  </div><!-- #app-container -->
+  <!-- LOGIN -->
+  <div id="login-screen" class="auth-wrapper">
+    <div id="login" class="auth-card glass-panel active-auth">
+      <div class="loginLogo">
+        <img src="/assets/logo.png" class="loginLogoImg">
+        <h2>CAT Engineering</h2>
+        <p>Welcome back! Please login to your account.</p>
+      </div>
+      <form id="loginForm">
+        <div class="input-group">
+          <span class="input-icon">👤</span>
+          <input id="username" class="glass-input" placeholder="Username" required>
+        </div>
+        <div class="input-group">
+          <span class="input-icon">🔒</span>
+          <input id="password" type="password" class="glass-input" placeholder="Password" required>
+        </div>
+        <button type="button" id="loginBtn" class="btn-primary-glass w-100">Login</button>
+      </form>
+      <p id="loginStatus" class="mt-2 text-center"></p>
+      <div class="auth-footer">
+        <p>Don't have an account? <a href="#" onclick="event.preventDefault(); toggleAuth('register')">Sign Up</a></p>
+      </div>
+    </div>
+    <div id="register" class="auth-card glass-panel">
+      <div class="loginLogo">
+        <h2>Create Account</h2>
+        <p>Join the Engineering Platform</p>
+      </div>
+      <form id="registerForm">
+        <div class="input-group"><input id="reg_username" class="glass-input" placeholder="Username (min 3 chars)"
+            required></div>
+        <div class="input-group"><input id="reg_email" type="email" class="glass-input" placeholder="Email Address"
+            required></div>
+        <div class="input-group"><input id="reg_password" type="password" class="glass-input"
+            placeholder="Password (min 6 chars)" required></div>
+        <div class="input-group"><input id="reg_college" class="glass-input" placeholder="College (optional)"></div>
+        <div class="input-grid">
+          <input id="reg_year" class="glass-input" placeholder="Year Passed Out">
+          <input id="reg_course" class="glass-input" placeholder="Course">
+        </div>
+        <button type="button" id="signupBtn" class="btn-primary-glass w-100 mt-3">Register</button>
+      </form>
+      <p id="registerStatus" class="mt-2 text-center"></p>
+      <div class="auth-footer">
+        <p>Already have an account? <a href="#" onclick="event.preventDefault(); toggleAuth('login')">Login</a></p>
+      </div>
+    </div>
+  </div>
+  <!-- COMPONENT MODAL -->
+  <div id="componentModal" class="glass-modal" style="display:none;">
+    <div class="modal-content glass-panel">
+      <h2 id="modalName"></h2>
+      <div class="modal-body-split">
+        <div class="modal-image-container"><img id="modalImage" class="component-img"></div>
+        <div class="modal-details">
+          <h3>Definition</h3>
+          <p id="modalDefinition"></p>
+          <h4>Formula</h4>
+          <p class="formula-box" id="modalFormula"></p>
+        </div>
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:15px; margin-top:20px;">
+        <button onclick="downloadCircuitPDF()" class="btn-primary-glass"
+          style="display:flex; align-items:center; gap:8px;">
+          <svg fill="currentColor" width="20" height="20" viewBox="0 0 24 24">
+            <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
+          </svg>
+          Download PDF
+        </button>
+        <button onclick="closeComponentModal()" class="btn-danger-glass">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/app.js"></script>
+  <script src="/splash.js"></script>
+  <script src="/pages.js"></script>
+  <script src="/home.js"></script>
+  <script src="/analysis.js"></script>
+  <script src="/circuit-builder.js"></script>
+  <script src="/breadboard.js"></script>
+  <script src="/iot.js"></script>
+  <script src="/graphs.js"></script>
+
+</body>
+
+</html>

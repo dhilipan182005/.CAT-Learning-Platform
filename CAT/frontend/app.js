@@ -17,48 +17,68 @@ function toggleAuth(type) {
   document.getElementById(type)?.classList.add('active-auth');
 }
 
-function performLogin() {
+async function performLogin() {
   const user = document.getElementById('username')?.value.trim();
   const pass = document.getElementById('password')?.value;
   const status = document.getElementById('loginStatus');
 
   if (!user || !pass) {
-    if (status) { status.innerText = 'Please enter username and password.'; status.style.color = '#ef4444'; }
+    if (status) {
+      status.innerText = 'Please enter username and password.';
+      status.style.color = '#ef4444';
+    }
     return;
   }
 
-  // Check known users, otherwise create a generic user session
-  let role    = 'user';
-  let display = user.toUpperCase().slice(0, 2);
-
-  if (user === "devlpdhilip") {
-    role = "editor";
-    display = "Dev Dhilip";
-    // Dev bypass: unlock everything instantly
-    console.log("Developer Mode: Full access granted.");
-  } else if (USERS[user]) {
-    if (USERS[user].password !== pass) {
-      if (status) { status.innerText = 'Incorrect password.'; status.style.color = '#ef4444'; }
-      return;
-    }
-    role    = USERS[user].role;
-    display = USERS[user].display;
+  if (status) {
+    status.innerText = 'Logging in...';
+    status.style.color = '#00e5ff';
   }
 
-  currentUser = user;
-  currentRole = role;
-  sessionStorage.setItem('catUser', JSON.stringify({ user, role, display }));
+  try {
+    const response = await fetch('http://localhost:3000/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: user, password: pass })
+    });
 
-  const loginScreen  = document.getElementById('login-screen');
-  const appContainer = document.getElementById('app-container');
-  if (loginScreen)  loginScreen.style.display  = 'none';
-  if (appContainer) appContainer.style.display = 'flex';
+    const data = await response.json();
 
-  // Update avatar and user display
-  updateAvatarDisplay(display, role);
+    if (data.success) {
+      currentUser = data.user.username;
+      currentRole = data.user.role;
+      const display = data.user.username.toUpperCase().slice(0, 2);
 
-  if (typeof showPage === 'function') showPage('home');
-  console.log(`Logged in as ${user} (${role})`);
+      sessionStorage.setItem('catUser', JSON.stringify({
+        user: data.user.username,
+        role: data.user.role,
+        display: display,
+        token: data.token,
+        user_id: data.user.user_id
+      }));
+
+      const loginScreen = document.getElementById('login-screen');
+      const appContainer = document.getElementById('app-container');
+      if (loginScreen) loginScreen.style.display = 'none';
+      if (appContainer) appContainer.style.display = 'flex';
+
+      updateAvatarDisplay(display, data.user.role);
+
+      if (typeof showPage === 'function') showPage('home');
+      console.log(`Logged in as ${data.user.username} (${data.user.role})`);
+    } else {
+      if (status) {
+        status.innerText = data.message || 'Login failed.';
+        status.style.color = '#ef4444';
+      }
+    }
+  } catch (error) {
+    console.error('Login error:', error);
+    if (status) {
+      status.innerText = 'Server unavailable. Make sure at 3000.';
+      status.style.color = '#ef4444';
+    }
+  }
 }
 function login() { performLogin(); }
 
@@ -73,19 +93,36 @@ function updateAvatarDisplay(display, role) {
   }
 }
 
-function registerUser() {
+async function registerUser() {
   const user   = document.getElementById('reg_username')?.value.trim();
   const pass   = document.getElementById('reg_password')?.value;
   const status = document.getElementById('registerStatus');
-  if (user && pass) {
-    // Store in localStorage for demo
-    const accounts = JSON.parse(localStorage.getItem('catAccounts') || '{}');
-    accounts[user] = { password: pass, role: 'user' };
-    localStorage.setItem('catAccounts', JSON.stringify(accounts));
-    if (status) { status.innerText = 'Account created! Please login.'; status.style.color = '#10b981'; }
-    setTimeout(() => toggleAuth('login'), 1200);
-  } else {
+
+  if (!user || !pass) {
     if (status) { status.innerText = 'Please fill all fields.'; status.style.color = '#ef4444'; }
+    return;
+  }
+
+  if (status) { status.innerText = 'Creating account...'; status.style.color = '#00e5ff'; }
+
+  try {
+    const response = await fetch('http://localhost:3000/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: user, password: pass })
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      if (status) { status.innerText = 'Account created! Please login.'; status.style.color = '#10b981'; }
+      setTimeout(() => toggleAuth('login'), 1200);
+    } else {
+      if (status) { status.innerText = data.message || 'Registration failed.'; status.style.color = '#ef4444'; }
+    }
+  } catch (error) {
+    console.error('Registration error:', error);
+    if (status) { status.innerText = 'Server unavailable.'; status.style.color = '#ef4444'; }
   }
 }
 

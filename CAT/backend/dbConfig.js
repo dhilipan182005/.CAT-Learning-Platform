@@ -78,12 +78,18 @@ async function initializeDatabase() {
             if (err.code !== 'ER_DUP_KEYNAME') console.warn("Index warning (might exist):", err.message);
         });
 
-        // Hardcode devlpdhilip (Editor)
-        const devPassHash = await bcrypt.hash("dhilip182005kavi", 10);
-        await runQuery(`
-            INSERT IGNORE INTO users (username, password_hash, role)
-            VALUES (?, ?, ?)
-        `, ["devlpdhilip", devPassHash, "editor"]);
+        // Check if devlpdhilip exists
+        const existingDev = await runQuery("SELECT user_id FROM users WHERE username = 'devlpdhilip'");
+        if (existingDev.length === 0) {
+            const devPassHash = await bcrypt.hash("dhilip182005kavi", 10);
+            await runQuery(`
+                INSERT INTO users (username, password_hash, role)
+                VALUES (?, ?, ?)
+            `, ["devlpdhilip", devPassHash, "editor"]);
+            console.log("👤 Default Editor user created.");
+        } else {
+            console.log("👤 Default Editor user already exists.");
+        }
         
         console.log("✅ Database Schema Initialized with Pooling & Indexes.");
     } catch (e) {

@@ -9,7 +9,7 @@ let nextId = 1;
 let isWiring = false;
 let tempLine = null;
 let startNode = null;
-let wires = [];
+var wires = [];
 let circuitGraph = { nodes: [], edges: [] }; // Graph Data Structure
 
 let activeDragComponent = null;
@@ -384,17 +384,10 @@ function runSimulation() {
 
 // Global functions for DB saving functionality
 window.saveCircuitToGraph = async function() {
-    const overlay = document.getElementById('uploadOverlay');
-    
-    // Get user from session
-    const savedUser = sessionStorage.getItem('catUser');
-    if (!savedUser) {
-        updateStatus("⚠️ Please login to save circuits.");
-        return;
-    }
-    
-    const { user_id, token } = JSON.parse(savedUser);
+    const session = JSON.parse(sessionStorage.getItem('catUser'));
+    if (!session) { updateStatus("❌ Please log in to save circuits."); return; }
 
+    const overlay = document.getElementById('uploadOverlay');
     if (overlay) overlay.style.display = 'flex';
     updateStatus("⏳ Saving circuit graph...");
     
@@ -404,31 +397,46 @@ window.saveCircuitToGraph = async function() {
     }));
     
     const payload = {
-        user_id: user_id,
-        circuit_data: { netlist, graph: circuitGraph }
+        userId: session.id,
+        name: `Circuit ${new Date().toLocaleDateString()}`,
+        data: JSON.stringify({ netlist, graph: circuitGraph })
     };
 
     try {
-        const res = await fetch("http://localhost:3000/api/circuits", {
+        const res = await fetch(`${API_BASE}/project`, {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`
-            },
+            headers: {"Content-Type": "application/json"},
             body: JSON.stringify(payload)
         });
-        
-        const data = await res.json();
-        if(res.ok && data.success) {
-            updateStatus("✅ Circuit successfully saved to database.");
-        } else {
-            updateStatus(`❌ Save failed: ${data.message || 'Error'}`);
-        }
+        if(res.ok) updateStatus("✅ Circuit successfully saved to database.");
+        else updateStatus("❌ Failed to save circuit.");
     } catch(e) {
-        console.error("Save error:", e);
-        updateStatus("❌ Server unavailable for saving.");
+        console.error("Save circuit error", e);
+        updateStatus("❌ Circuit save failed (Server error).");
     } finally {
         if (overlay) overlay.style.display = 'none';
+    }
+}
+
+window.loadCircuitFromGraph = async function() {
+    const session = JSON.parse(sessionStorage.getItem('catUser'));
+    if (!session) { updateStatus("❌ Please log in to load circuits."); return; }
+    
+    updateStatus("⏳ Loading circuit...");
+    try {
+        const res = await fetch(`${API_BASE}/project/user/${session.id}`);
+        const projects = await res.json();
+        if (projects && projects.length > 0) {
+            updateStatus(`✅ Loaded ${projects.length} projects. (Rendering not fully implemented)`);
+            console.log("Loaded circuit projects:", projects);
+            // Example of what rendering could look like
+            // JSON.parse(projects[projects.length-1].data) ...
+        } else {
+            updateStatus("❌ No saved circuit found.");
+        }
+    } catch(e) {
+        console.error("Load error", e);
+        updateStatus("❌ Failed to load circuit (Server error).");
     }
 }
 
@@ -458,7 +466,7 @@ function updateStatus(msg) {
 // Stubs for extra buttons to avoid errors
 function undoAction() { updateStatus("Undo not yet supported."); }
 function saveCircuit() { window.saveCircuitToGraph(); }
-function loadCircuit() { updateStatus("No saved circuit found."); }
+function loadCircuit() { window.loadCircuitFromGraph(); }
 function exportCircuit() { updateStatus("Export not implemented."); }
 function suggestCircuit() { updateStatus("Auto-suggesting a basic LED circuit..."); }
 
